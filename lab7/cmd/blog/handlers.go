@@ -1,12 +1,13 @@
 package main
 
 import (
+	"database/sql"
 	"html/template"
 	"log"
 	"net/http"
-	"github.com/jmoiron/sqlx"
-	"database/sql"
+	"strconv"
 	"github.com/gorilla/mux"
+	"github.com/jmoiron/sqlx"
 )
 
 type indexPage struct {
@@ -16,68 +17,69 @@ type indexPage struct {
 }
 
 type postPage struct {
-	Title   string
-	Content string
+	Title   string `db:title`
+	Subtitle string `db:subtitle`
+	Content string `db:content`
 }
 
 type featuredPostData struct {
-	ID			string `db:"post_ID`
+	ID          string `db:"post_ID`
 	Title       string `db:"title"`
 	Subtitle    string `db:"subtitle"`
 	Image       string `db:"image_url"`
 	Author      string `db:"author"`
 	AuthorImg   string `db:"author_url"`
 	PublishDate string `db:"publish_date"`
-	INFO		string `db:"content"`
+	PostUrl		string
 }
 
 type mostRecentData struct {
-	ID			string `db:"post_ID`
+	ID          string `db:"post_ID`
 	Title       string `db:"title"`
 	Subtitle    string `db:"subtitle"`
 	Image       string `db:"image_url"`
 	Author      string `db:"author"`
 	AuthorImg   string `db:"author_url"`
 	PublishDate string `db:"publish_date"`
-	INFO		string `db:"content"`
+	PostUrl		string
 }
 
-
-func index(w http.ResponseWriter, r *http.Request) {
+func index(db *sqlx.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-			featuredPosts, err := posts(db)
-			if err != nil {
-				http.Error(w, "Internal Server Error", 500)
-				log.Println(err)
-				return
-			}
-			recentPosts, err := posts(db)
-			if err != nil {
-				http.Error(w, "Internal Server Error", 500)
-				log.Println(err)
-				return
-			}
-
-			ts, err := template.ParseFiles("pages/index.html")
-			if err != nil {
-				http.Error(w, "Internal Server Error", 500)
-				log.Println(err)
-				return
-			}
-
-			data := indexPageData{
-				FeaturedPosts:   featuredPosts,
-				MostRecentPosts: recentPosts,
-			}
-
-			err = ts.Execute(w, data)
-			if err != nil {
-				http.Error(w, "Internal Server Error", 500)
-				log.Println(err)
-				return
-			}
+		featuredPosts, err := featuredPosts(db)
+		if err != nil {
+			http.Error(w, "Internal Server Error", 500)
+			log.Println(err)
+			return
 		}
-		
+		recentPosts, err := mostRecent(db)
+		if err != nil {
+			http.Error(w, "Internal Server Error", 500)
+			log.Println(err)
+			return
+		}
+
+		ts, err := template.ParseFiles("pages/index.html")
+		if err != nil {
+			http.Error(w, "Internal Server Error", 500)
+			log.Println(err)
+			return
+		}
+
+		data := indexPage{
+			Title: 			 "Escape",
+			FeaturedPosts:   featuredPosts,
+			MostRecent: 	 recentPosts,
+		}
+
+		err = ts.Execute(w, data)
+		if err != nil {
+			http.Error(w, "Internal Server Error", 500)
+			log.Println(err)
+			return
+		}
+	}
+
 }
 
 func featuredPosts(db *sqlx.DB) ([]featuredPostData, error) {
@@ -87,17 +89,16 @@ func featuredPosts(db *sqlx.DB) ([]featuredPostData, error) {
 			title,
 			subtitle,
 			image_url,
-			'author',
-            'author_url',
-			publish_date,
-			content
+			author,
+            author_url,
+			publish_date
 		FROM
 			post
 		WHERE featured = 1
 		LIMIT 2
 	`
 
-	var featuredPosts []PostData
+	var featuredPosts []featuredPostData
 	err := db.Select(&featuredPosts, query)
 	//Select - много записей
 	//Get - одна
@@ -108,17 +109,16 @@ func featuredPosts(db *sqlx.DB) ([]featuredPostData, error) {
 	return featuredPosts, nil
 }
 
-func mostRecent(db *sqlx.DB) ([]recentPosts, error) {
+func mostRecent(db *sqlx.DB) ([]mostRecentData, error) {
 	const query = `
 		SELECT
 		    post_ID,
 			title,
 			subtitle,
 			image_url,
-			'author',
-            'author_url',
-			publish_date,
-			content
+			author,
+            author_url,
+			publish_date
 		FROM
 			post
 		WHERE featured = 0
@@ -139,9 +139,9 @@ func mostRecent(db *sqlx.DB) ([]recentPosts, error) {
 
 func postPageData(db *sqlx.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		orderIDStr := mux.Vars(r)["postID"] // Получаем orderID в виде строки из параметров урла
+		postIDStr := mux.Vars(r)["postID"] // Получаем orderID в виде строки из параметров урла
 
-		postId, err := strconv.Atoi(orderIDStr) // Конвертируем строку orderID в число
+		postId, err := strconv.Atoi(postIDStr) // Конвертируем строку orderID в число
 		if err != nil {
 			http.Error(w, "Invalid post id", 403)
 			log.Println(err)
@@ -181,25 +181,24 @@ func postPageData(db *sqlx.DB) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func order(db *sqlx.DB, Id int) (postPageData, error) {
+func postByID(db *sqlx.DB, Id int) (postPage, error) {
 	const query = `
 		SELECT
 			title,
 			subtitle,
-			image_url,
 			content
 		FROM
 			post
 		WHERE id = ?	
 	`
 
-	var order postPageData
+	var postPageData postPage
 
 	// Обязательно нужно передать в параметрах orderID
-	err := db.Get(&post, query, Id)
+	err := db.Get(&postPageData, query, Id)
 	if err != nil {
-		return postPageData{}, err
+		return postPage[], err
 	}
 
-	return order, nil
+	return postPageData, nil
 }
