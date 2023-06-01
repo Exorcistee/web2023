@@ -1,0 +1,192 @@
+* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.background {
+    background-repeat: no-repeat;
+    background-image: linear-gradient(0deg, rgba(66, 70, 73, 0.4), rgba(66, 70, 73, 0.4)), url("/static/img/login_background.png");
+    background-size: cover;
+    width: auto;
+    height: 100vh;
+    padding: 0 130px 0 230px;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.escape {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 16px;    
+}
+
+.escape_title {
+    font-family: Lora;
+    color: #FFFFFF;
+}
+
+.escape_title-escape {
+    font-size: 45.5px;
+    line-height: 46px;
+}
+
+.escape_title-author {
+    font-size: 24.5px;
+    line-height: 31px;
+}
+
+.escape_description {
+    font-family: Oxygen;
+    color: #FFFFFF;
+    font-size: 17px;
+    line-height: 25px; 
+}
+
+.authorization {
+    background: #FFFFFF;
+    border-radius: 3px;
+    margin: 0 auto 0 auto;
+    padding: 56px 40px 47px 40px;
+    display: flex;
+    flex-flow: column wrap;
+    box-sizing: border-box;
+}
+
+.authorization__title {
+    margin-bottom: 41px;
+    font: normal 400 34px/40px 'Lora', serif;
+    color: #000000;
+}
+
+.authorization__label {
+    font: normal 400 12px/16px 'Oxygen', serif;
+    padding-bottom: 5px;
+    padding-top: 40px;
+    color: #7A7A7A;
+}
+.authorization__email{
+    margin-top: 35px;
+}
+
+.authorization__input {
+    background: #FFFFFF;
+    border-bottom: 1px solid #EAEAEA;
+    height: 40px;
+    width: 400px;
+    margin: 0 0 5px 0;
+    padding-left: 4px;
+    font: normal 400 16px/24px 'Oxygen', serif;
+    color: #2E2E2E;
+}
+
+.toggle-visible {
+    background-image: url("/static/assets/eye.png");
+    position: absolute;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    top: 8px;
+    right: 0;
+    cursor: pointer;
+}
+
+.toggle-unvisible {
+    background-image: url("/static/assets/eye-off.png");
+    position: absolute;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    top: 8px;
+    right: 0;
+    cursor: pointer;
+}
+
+.authorization__password-container{
+    position: relative;
+}
+
+.authorization__button {
+    width: 93px;
+    height: 48px;
+    background: #DD783F;
+    border-radius: 3px;
+    font: normal 400 16px/24px 'Oxygen', serif;
+    color: #FFFFFF;
+    margin-top: 40px;
+}
+
+.authorization__error {
+    display: flex;
+    align-items: center;
+    width: 400px;
+    animation-name: error-label;
+    animation-duration: 0.3s;
+    height: 44px;
+    background: #FFEBEA;
+    border-left: 2px solid #E86961;
+    border-radius: 5px;    
+}
+
+.authorization__error-text {
+    font-family: 'Oxygen';
+    animation-name: error-label;
+    font-size: 14px;
+    line-height: 20px;
+    padding-left: 10px;
+    color: #2E2E2E;    
+}
+
+.authorization__error-svg {
+    animation-name: error-svg;
+    padding-left: 14px;   
+}
+
+.authorization__required-bad {
+    font-family: 'Oxygen';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    color: #E86961;    
+}
+
+.authorization__required-good {
+    font-family: 'Oxygen';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    margin-bottom: 35px;
+    color: #474747;    
+}
+
+@keyframes error-label{
+    0%{
+        height: 0px;
+        font-size: 0px;
+    }
+    100%{
+        height: 44px;
+        font-size: 14px;
+    }
+}
+
+@keyframes error-svg{
+    0%{
+        height: 0px;
+    }
+    100%{
+        height: 24px;
+    }
+}

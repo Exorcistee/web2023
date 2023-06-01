@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>login</title>
+    <link href="/static/css/login.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora&family=Oxygen&display=swap" rel="stylesheet">\
+</head>
+
+<body>    
+<section class = "background">
+    <div class = "escape">
+        <div class = "escape_title"><span class = "escape_title-escape">Escape.</span><span class = "escape_title-author">author</span></div>
+        <div class = "escape_description">Log in to start creating</div>
+    </div>
+    <div>
+        <form action="" class="authorization">
+            <div id = "title">
+                <p class="authorization__title">Log In</p>
+            </div>
+            <div class = "authorization__email">    
+                <label class="authorization__label" for="email">Email</label>
+                <div id = "emaildiv">
+                <input class="authorization__input" type="text" id="email-input" name="email">
+                </div>
+            </div>        
+            <label class="authorization__label" for="password">Password</label>
+            <div class="authorization__password-container">
+                <input class="authorization__input" type="password" id="password-input" name="password">    
+                <div id = "visible" class= "toggle-unvisible"></div>
+            </div>
+            <div id = "passworddiv"></div>
+            <form>
+                <button class="authorization__button" id = "button" type="button">Log In</button>
+            </form>
+        </form>
+    </div>
+</section>
+<script src="/static/js/login.js"></script>
+</body>
+
+</html>
